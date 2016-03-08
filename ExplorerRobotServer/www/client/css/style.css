@@ -1,0 +1,95 @@
+#joystickControlArea{
+    height: 500px;
+    width: 100%;
+}
+
+/* Hide nxt connection button by default */
+#btnRobotConnect{
+    display: none;
+    margin: 10px auto auto auto;    
+}
+
+.sensorBox .panel-body{
+    display: none;
+}
+#ultrasonicSensorValue,
+#soundSensorValue,
+#compassSensorValue,
+#accelerometerValue,
+#gyroValue{
+    font-size: 35px;
+    font-weight: bold;
+    width: 100%;
+    text-align: center;
+}
+
+#ultrasonicSensorValue:after{
+    content: " cm";
+}
+
+#soundSensorValue:after{
+    content: " DB";
+}
+
+#compassSensorValue:after{
+    content: " °";
+}
+
+.touchSensorValue{
+    text-align: center;
+    font-size: 20px;
+    width: 100%;
+    display: none;
+}
+
+.touchSensorValue.on{
+    background-color: #fe7272;
+    display: block;
+}
+
+.touchSensorValue.off{
+    background-color: #cef475;
+    display: block;
+}
+
+input.url {
+    width: 300px;
+}
+
+input.number{
+    width: 40px;
+}
+
+.canvasContainer{
+    min-height: 500px;
+    position: relative;
+}
+
+#mapCanvas{
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 1;
+}
+
+#mapCanvas2{
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 2;
+}
+
+
+#robotPort label:not(:first-child) {
+    margin-left: 20px;
+}
+
+#motorPort{
+    margin-top: 10px;
+}
+
+video{
+	max-width: 100%;
+}
+
+

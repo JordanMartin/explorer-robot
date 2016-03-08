@@ -1,0 +1,96 @@
+<!Doctype html>
+
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>Index page</title>
+        <script type="text/javascript" charset="utf-8" src="js/jquery-1.3.2.js"></script>
+    </head>
+    
+    <body style="font-family: helvetica">
+        <div style="text-align: center">            
+            <h2>NXT Websocket client</h2>  
+            <p><label>Websocket URL : <input type="text" id="socketUrl" placeholder="ws://adresse:port/path/to/websocket" style="height: 20px; font-size: 16px; width: 300px"/></label><button type="button" id="socketConnect">Connect to WS</button></p>
+
+            <div style="width: 80%; margin: auto;">
+                <button class="btnCmdTest" value="{action: connect,robot_type: ev3,comPort: COM10, leftMotorPort:A,rightMotorPort: D,compassPort: One,leftUltrasonicPort: Two,frontUltrasonicPort: Three,rightUltrasonicPort: Four}">Connect EV3</button>
+                <button class="btnCmdTest" value="{action: connect,robot_type: nxt,name: NXT, address: 0016530F2C26, leftMotorPort:C,rightMotorPort: A,compassPort: Four,leftUltrasonicPort: Three,frontUltrasonicPort: Two,rightUltrasonicPort: One}">Connect NXT</button>
+                <button class="btnCmdTest" value="{motor_command:[{name: both, action: start,  speed: 100}]}">Start motor</button>
+                <button class="btnCmdTest" value="{motor_command:[{name: both, action: stop}]}">Stop motor</button>
+                <button class="btnCmdTest" value="{sensor_request:[{name: compass}}">Sensor reques</button>                
+                <button class="btnCmdTest" value="{functionality_call: mapping}">Mapping</button>                
+                <input type="text" id="cmd" placeholder="Type your NXT API commands (enter to send)" style="height: 30px; font-size: 19px; width: 100%"/>
+                <button id="loopCommand">Loop the command</button><button id="stopLoopCommand">Stop loop</button>
+            </div>
+           <h3>Console</h3>
+        </div>       
+        
+        <div id="log" style="width: 80%; margin: 10px auto; border: solid 1px #ccc; height: 300px; overflow-y: scroll"></div>
+               
+        <script>
+            var ws = null;
+            var loop;
+            
+            $(document).ready(function() {
+			
+				$('#socketUrl').val("ws://" + location.host + "/ws/api");
+                
+                $('#socketConnect').click(function(){                    
+                    initWebsocket($('#socketUrl').val());
+                });
+                               
+                $('#cmd').keypress(function(e) {
+                    if(e.which === 13) {
+                        if(ws !== null && ws.readyState === 1)
+                        {
+                            sendMessage($('#cmd').val());
+                            $('#cmd').val('');                                
+                        }else{
+                            $('#log').prepend('<b>Connect to the WS before sending commands</b><br>');
+                        }                        
+                    }
+                });  
+                
+                $('.btnCmdTest').click(function(){
+                   $('#cmd') .val($(this).val()).focus();
+                });
+                
+                $('#loopCommand').click(function(){
+                   clearInterval(loop); 
+                   loop = setInterval(function(){sendMessage($('#cmd').val());}, 500); 
+                });
+                
+                $('#stopLoopCommand').click(function(){
+                   clearInterval(loop); 
+                });
+            });
+
+            function sendMessage(message) {
+                if(ws !== null && ws.readyState === 1)
+                {
+                    $('#log').prepend('<small>command sended :<b>' + message + '</b></small><br><br>');
+                    ws.send(message);
+                }else
+                    $('#log').prepend('<b>Connect to the WS before sending commands</b><br>');
+            }     
+            
+            function initWebsocket(addr){
+                
+                ws = new WebSocket(addr);
+                
+                ws.onopen = function(event) {
+                    $('#log').prepend(' * Connected to the socket<br>');
+                };
+                
+                ws.onmessage = function(event) {
+                    $('#log').prepend('<b> > Response : ' + event.data + '</b><br>');
+                };
+            
+                ws.onclose = function(event) {
+                    $('#log').prepend(' * Disconnected from the socket !<br>');
+                };    
+            }
+        </script>
+        
+    </body>
+</html>
